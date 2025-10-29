@@ -131,9 +131,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             if (flag != null && !flag.isReached()) {
                 Rectangle playerBounds = p.getBounds();
                 Rectangle flagBounds = flag.getBounds();
-                if (playerBounds.intersects(flagBounds)) {
-                    flag.setReached(true);
-                    p.setWon(true);
+                if (playerBounds.intersects(flagBounds)) { //ตรวจสอบว่าคนชนธงยัง
+                    flag.setReached(true); //ถ้าชนแล้ว
+                    p.setWon(true); //คนเล่นจะชนะ
                 }
             }
 

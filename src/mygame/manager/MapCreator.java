@@ -116,7 +116,8 @@ public class MapCreator {
         map.setEndPosition(fortX, fortY);
         
         // Create a flag at the fort entrance (optional visual indicator)
-        Flag flag = new Flag(fortX - 100, fortY - 96, loader.load("flag.png")); // Position flag before fort entrance
+        Flag flag = new Flag(fortX - 1100, fortY - 96, loader.load
+        ("flag.png")); // Position flag before fort entrance
         map.setFlag(flag);
         
         System.out.println("Rightmost content at: " + rightmostContentX);
@@ -152,6 +153,9 @@ public class MapCreator {
         for (int x = 0; x < fullLevelWidth; x += 48) {
             map.addBlock(new Brick(x, groundY + 48, loader.load("brick.png")));
             map.addBlock(new Brick(x, groundY + 96, loader.load("brick.png")));
+            map.addBlock(new Brick(x, groundY + 144, loader.load("brick.png")));
+            map.addBlock(new Brick(x, groundY + 192, loader.load("brick.png")));
+            map.addBlock(new Brick(x, groundY + 240, loader.load("brick.png")));
         }
         
         System.out.println("Created default ground from 0 to " + fullLevelWidth + " at level " + groundY);

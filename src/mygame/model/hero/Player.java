@@ -17,7 +17,7 @@ public class Player {
     
     //กำหนดค่าคงที่
     private final double MOVE_SPEED = 1.0; //ความเร็วในการเคลื่อนที่ต่อครั้ง
-    private final double MAX_SPEED = 3.0; //ความเร็วสูงสุดที่ผู้เล่นสามารถไปถึงได้
+    private final double MAX_SPEED = 4.0; //ความเร็วสูงสุดที่ผู้เล่นสามารถไปถึงได้
     private final double JUMP_STRENGTH = -16.0; //ความสูงของการกระโดด ร่องลบเพราะแกนYลงด้านล่าง
     private final double GRAVITY = 0.8;
     private final double FRICTION = 0.85;
@@ -227,7 +227,7 @@ public class Player {
             if (lives <= 0) {
                 dead = true;
             } else {
-                respawn();
+                 respawn();
             }
         }
     }//อันนี้เป็นกินเห็ดแล้วเพิ่มขนาด
