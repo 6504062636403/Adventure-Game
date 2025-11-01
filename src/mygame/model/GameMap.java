@@ -22,7 +22,7 @@ public class GameMap {
     private Point endPosition;
     private Flag flag;
 
-    public GameMap(BufferedImage bg) { this.background = bg; } 
+    public GameMap(BufferedImage bg) { this.background = bg; } //กำหนดตัวย่อที่ใช้สำหรับพื้นหลัง
 
     public void setPlayer(Player p) { this.player = p; } //กำหนดผู้เล่น
     public Player getPlayer() { return this.player; }

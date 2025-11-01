@@ -9,16 +9,16 @@ public class Flag {
     private BufferedImage image;
     private boolean reached;
     
-    public Flag(int x, int y, BufferedImage image) {
+    public Flag(int x, int y, BufferedImage image) { //กำหนดตำแหน่งและรูปภาพของธง(จุดสุดท้าย)
         this.x = x;
         this.y = y;
         this.image = image;
-        this.reached = false;
+        this.reached = false; //ยังไม่ถึงจุดท้าย
         
-        if (image != null) {
-            this.width = image.getWidth();
-            this.height = image.getHeight();
-        } else {
+        if (image != null) { //ถ้ามีรูปภาพ
+            this.width = image.getWidth(); //กำหนดขนาดตามรูปภาพ
+            this.height = image.getHeight(); 
+        } else { //ถ้าไม่มีรูปภาพ กำหนดขนาดตามนี้
             this.width = 48;
             this.height = 96;
         }

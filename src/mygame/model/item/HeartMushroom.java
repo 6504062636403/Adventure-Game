@@ -9,8 +9,8 @@ public class HeartMushroom {
     private BufferedImage image;
     private boolean collected = false;
     
-    public HeartMushroom(int x, int y, BufferedImage image) {
-        this.x = x;
+    public HeartMushroom(int x, int y, BufferedImage image) { //กำหนดตำแหน่งและรูปภาพของเห็ด
+        this.x = x; //กำหนดตำแหน่ง x
         this.y = y;
         this.image = image;
     }

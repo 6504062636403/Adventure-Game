@@ -9,7 +9,7 @@ public class ImageLoader {
     private final String basePath;
 
     public ImageLoader(String basePath) {
-        this.basePath = basePath;
+        this.basePath = basePath; //กำหนดที่อยู่พื้นฐานของรูปภาพ
     }
 
     public BufferedImage load(String name) {

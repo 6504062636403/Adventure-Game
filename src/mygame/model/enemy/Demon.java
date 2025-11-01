@@ -22,11 +22,11 @@ public class Demon {
     private final double GROUND_LEVEL = 450;
 
     public Demon(int x, int y, BufferedImage sprite, Type type) { //เป็นการกำหนดการเคลื่อนที่ของสัตว์อันตราย
-        this.x = x; 
+        this.x = x; //ตำแหน่งเริ่มต้น 
         this.y = y; 
         this.sprite = sprite; //รูปภาพของสัตว์อันตราย
         this.type = type; 
-        this.vx = 0;
+        this.vx = 0; //ความเร็วเริ่มต้น
         this.vy = 0;
     
         this.speed = (type == Type.DEMON1) ? 1.5 : 2.5; //ถ้าเป็น DEMON1 ความเร็ว=1.5 แต่ถ้าเป็น DEMON2 ความเร็ว=2.5
@@ -34,7 +34,7 @@ public class Demon {
 
     public Demon(int x, int y, BufferedImage sprite, Type type, boolean isStatic) { //เป็นการบอกให้รู้ว่าสัตว์อันตรายนั้นจะอยู่นิ่งหรือไม่
         this(x, y, sprite, type); 
-        this.isStatic = isStatic;
+        this.isStatic = isStatic; //กำหนดค่าสถานะให้อยู่นิ่ง
         if (isStatic) {
             this.speed = 0; //ไม่เคลื่อนที่
         }

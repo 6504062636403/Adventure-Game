@@ -14,7 +14,6 @@ public class Player {
     private boolean won = false; //ชนะ
     private BufferedImage sprite; //รูปภาพของplayer
     private GameMap gameMap;
-    
     //กำหนดค่าคงที่
     private final double MOVE_SPEED = 1.0; //ความเร็วในการเคลื่อนที่ต่อครั้ง
     private final double MAX_SPEED = 4.0; //ความเร็วสูงสุดที่ผู้เล่นสามารถไปถึงได้
@@ -23,30 +22,26 @@ public class Player {
     private final double FRICTION = 0.85;
     private final double MAX_FALL_SPEED = 18.0; 
     private final double GROUND_LEVEL = 450;
-    
-    
     private boolean facingRight = true;
     private int animationFrame = 0;
     private int animationTimer = 0;
     private boolean invulnerable = false;
     private int invulnerabilityTimer = 0;
     
-    // Checkpoint system - store last safe position
     private double checkpointX = 100; // ตำแหน่งxเริ่มต้น
-    private double checkpointY = 350;
+    private double checkpointY = 350; // ตำแหน่งyเริ่มต้น
 
     public Player(int x, int y, BufferedImage sprite) {
         this.x = x;
         this.y = y;
         this.sprite = sprite; //spriteจะเป็นรูปplaye 
-        // Start with small size by default
+        //กำหนดขนาดเริ่มต้น
         this.width = 30; 
         this.height = 30;
-        this.vx = 0; 
-        this.vy = 0; 
-        this.big = false; // Player starts small
-        // Initialize checkpoint to starting position
-        this.checkpointX = x;
+        this.vx = 0; //ความเร็วเริ่มต้น
+        this.vy = 0; //ความเร็วเริ่มต้น
+        this.big = false; // เริ่มต้นเป็นตัวเล็ก
+        this.checkpointX = x; //ตั้งค่าจุดเช็คพอยต์เริ่มต้น
         this.checkpointY = y;
     }
 
@@ -233,8 +228,8 @@ public class Player {
         if (big) {
             int oldHeight = (int)height;
             big = false; 
-            width = 48; 
-            height = 48;
+            width = 30; 
+            height = 30;
             y += (oldHeight - height); 
             invulnerable = true;
             invulnerabilityTimer = 120; 

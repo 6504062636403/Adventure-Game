@@ -7,6 +7,7 @@ public class Brick {
     private int x,y,w=48,h=48;
     private BufferedImage sprite;
 
+    //กำหนดตำแหน่งและรูปอิฐ
     public Brick(int x, int y, BufferedImage sprite) { this.x = x; this.y = y; this.sprite = sprite;}
 
     public int getX() { return x; }

@@ -19,35 +19,28 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private ImageLoader loader;
     private final int WIDTH = 1200;
     private final int HEIGHT = 900;
-
-    // Camera system
-    private int cameraX = 0;
-    private int cameraY = 0;
+    private int cameraX = 0; //ตำแหน่งกล้องในแกนX
+    private int cameraY = 0; //ตำแหน่งกล้องในแกนY
     private final int CAMERA_SMOOTH_FACTOR = 8; // Lower = smoother, higher = more responsive
-    
     // Game stats
-    // (score removed) game no longer tracks score in GamePanel
-
-    // input
-    private boolean left, right, jump;
+    private boolean left, right, jump; //ตัวแปรปุ่มควบคุมการเคลื่อนที่
 
     public GamePanel() {
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        setFocusable(true);
-        setBackground(Color.CYAN);
+        setPreferredSize(new Dimension(WIDTH, HEIGHT)); //กำหนดขนาดของ JPanel
+        setFocusable(true); //ตั้งค่าให้ JPanel สามารถรับโฟกัสได้
+        setBackground(Color.CYAN); //ตั้งค่าพื้นหลังเป็นสีCYAN
         
-        loader = new ImageLoader("resources");
-        MapCreator creator = new MapCreator(loader, "background.png");
-        map = creator.create();
-        
-        // Set the game map reference in the player for collision detection
-        Player player = map.getPlayer();
-        if (player != null) {
-            player.setGameMap(map);
+        loader = new ImageLoader("resources"); //โหลดรูปภาพจากโฟลเดอร์ resources
+        MapCreator creator = new MapCreator(loader, "background.png"); //สร้างพื้นหลังจากรูป background.png
+        map = creator.create(); //สร้าง
+
+        Player player = map.getPlayer(); //ตั้งค่าGameMapให้Player
+        if (player != null) { 
+            player.setGameMap(map); //เชื่อมโยงกับGameMap
         }
-        
-        addKeyListener(this);
-        gameThread = new Thread(this);
+
+        addKeyListener(this); //เพิ่ม KeyListener ให้ JPanel
+        gameThread = new Thread(this); 
         gameThread.start();
     }
 

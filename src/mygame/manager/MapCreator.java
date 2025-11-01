@@ -16,9 +16,9 @@ public class MapCreator {
     private final ImageLoader loader;
     private final BufferedImage mapImg;
     
-    public MapCreator(ImageLoader loader, String mapFile) {
-        this.loader = loader;
-        this.mapImg = loader.load(mapFile);
+    public MapCreator(ImageLoader loader, String mapFile) { 
+        this.loader = loader; //โหลดรูปภาพ
+        this.mapImg = loader.load(mapFile); //เป็นการโหลดรูปภาพพื้นหลัง
     }
     
 
