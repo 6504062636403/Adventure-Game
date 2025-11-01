@@ -30,15 +30,24 @@ public class Player {
     private int animationTimer = 0;
     private boolean invulnerable = false;
     private int invulnerabilityTimer = 0;
+    
+    // Checkpoint system - store last safe position
+    private double checkpointX = 100; // ตำแหน่งxเริ่มต้น
+    private double checkpointY = 350;
 
     public Player(int x, int y, BufferedImage sprite) {
         this.x = x;
         this.y = y;
         this.sprite = sprite; //spriteจะเป็นรูปplaye 
-        this.width = 68; 
-        this.height = 68;
+        // Start with small size by default
+        this.width = 30; 
+        this.height = 30;
         this.vx = 0; 
         this.vy = 0; 
+        this.big = false; // Player starts small
+        // Initialize checkpoint to starting position
+        this.checkpointX = x;
+        this.checkpointY = y;
     }
 
     public void setGameMap(GameMap gameMap) {
@@ -68,12 +77,11 @@ public class Player {
         }
     }
 
-    public void update() {
-        
+    public void update() { //อัพเดทสถานะของplayer
         if (invulnerable) {
-            invulnerabilityTimer--;
-            if (invulnerabilityTimer <= 0) {
-                invulnerable = false;
+            invulnerabilityTimer--; 
+            if (invulnerabilityTimer <= 0) { //
+                invulnerable = false; 
             }
         }
         
@@ -173,31 +181,50 @@ public class Player {
 
         //ตรวจสอบถ้าตกนอกหน้าจอ
         if (y > 600) {
+            setCheckpointBack(); // Move checkpoint back when falling off screen
             loseLife();
             respawn();
+        }
+        
+        // Update checkpoint when player is safely on ground and not falling
+        if (onGround && vy == 0 && !invulnerable) {
+            updateCheckpoint();
         }
     }
 
     private void respawn() {
-        x = 100; // ตำแหน่งxเริ่มต้น
-        y = GROUND_LEVEL - height;
+        x = checkpointX; // Respawn at last checkpoint instead of fixed position
+        y = checkpointY;
         vx = 0;
         vy = 0;
         onGround = true;
         invulnerable = true;
         invulnerabilityTimer = 120; //เกิดจะกระพริบ 2 วินาที
     }
+    
+    private void updateCheckpoint() {
+        // Only update checkpoint if we're on solid ground and moving forward
+        if (x > checkpointX) {
+            checkpointX = x;
+            checkpointY = y;
+        }
+    }
+    
+    private void setCheckpointBack() {
+        // When player dies, set checkpoint back by 150 pixels (but not less than starting position)
+        checkpointX = Math.max(100, checkpointX - 150);
+    }
 
-    public Rectangle getBounds() { 
-        return new Rectangle((int)x, (int)y, (int)width, (int)height); 
+    public Rectangle getBounds() { //สร้างกรอบสี่เหลี่ยม 
+        return new Rectangle((int)x, (int)y, (int)width, (int)height); //returnเมื่อเรียกไปใช้
     }
 
     public void grow() {
         if (!big) { 
             big = true; 
             int oldHeight = (int)height;
-            width = 72; 
-            height = 72;
+            width = 70; // เพิ่มขนาดใหญ่ขึ้น
+            height = 70;
             y -= (height - oldHeight); //ปรับตำแหน่ง
         }
     } //อันนี้เป็นกินเห็ดแล้วเพิ่มขนาด
@@ -227,13 +254,14 @@ public class Player {
             if (lives <= 0) {
                 dead = true;
             } else {
-                 respawn();
+                setCheckpointBack(); // Move checkpoint back when player dies
+                respawn();
             }
         }
     }//อันนี้เป็นกินเห็ดแล้วเพิ่มขนาด
     
     public void gainLife() {
-        if (lives < 9) { //จำกัดจำนวนชีวิตสูงสุดที่9 
+        if (lives < 4) { //จำกัดจำนวนหัวใจสูงสุดที่ 4 ดวง
             lives++;
         }
     }
@@ -249,25 +277,20 @@ public class Player {
     public double getVX() { return vx; }
     public double getVY() { return vy; }
 
-    public void draw(Graphics2D g) {
+    public void draw(Graphics2D g) { //วาดตัวplayer
         
-        if (invulnerable && (invulnerabilityTimer / 4) % 2 == 0) {
-            return; 
+        if (invulnerable && (invulnerabilityTimer / 4) % 2 == 0) { //กระพริบเมื่อเกิดใหม่
+            return;  
         }
-        
-        if (sprite != null) {
-            // Flip sprite based on direction
+        if (sprite != null) { //ถ้ามีรูปภาพ
             if (facingRight) {
                 g.drawImage(sprite, (int)x, (int)y, (int)width, (int)height, null);
             } else {
                 g.drawImage(sprite, (int)x + (int)width, (int)y, -(int)width, (int)height, null);
             }
-        } else {
-            // Colored rectangle fallback
-            g.setColor(big ? Color.BLUE : Color.CYAN);
+        } else { //ถ้าไม่มีรูปภาพ วาดเป็นสี่เหลี่ยมแทน
+            g.setColor(big ? Color.BLUE : Color.CYAN); 
             g.fillRect((int)x, (int)y, (int)width, (int)height);
-            
-            //
             g.setColor(Color.WHITE);
             int eyeSize = 4;
             int eyeY = (int)y + (int)height / 3;

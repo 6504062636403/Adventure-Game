@@ -24,7 +24,7 @@ public class GameMap {
 
     public GameMap(BufferedImage bg) { this.background = bg; } 
 
-    public void setPlayer(Player p) { this.player = p; }
+    public void setPlayer(Player p) { this.player = p; } //กำหนดผู้เล่น
     public Player getPlayer() { return this.player; }
 
     public void addBlock(Brick b) { bricks.add(b); }
@@ -32,18 +32,18 @@ public class GameMap {
         d.setGameMap(this); //เชื่อมโยงกับแผนที่เกม
         enemies.add(d); 
     }
-    public void addItem(Mushroom m) { items.add(m); }
-    public void addHeartMushroom(HeartMushroom hm) { heartMushrooms.add(hm); }
+    public void addItem(Mushroom m) { items.add(m); } //เพิ่มเห็ด
+    public void addHeartMushroom(HeartMushroom hm) { heartMushrooms.add(hm); } //เพิ่มหัวใจ
 
-    public List<Demon> getEnemies() { return enemies; }
+    public List<Demon> getEnemies() { return enemies; } 
     public List<Mushroom> getItems() { return items; }
     public List<HeartMushroom> getHeartMushrooms() { return heartMushrooms; }
     public List<Brick> getBricks() { return bricks; }
 
-    public void setEndPosition(int x, int y) { this.endPosition = new Point(x,y); }
+    public void setEndPosition(int x, int y) { this.endPosition = new Point(x,y); } //กำหนดตำแหน่งสิ้นสุด
     public Point getEndPosition() { return endPosition; }
     
-    public void setFlag(Flag flag) { this.flag = flag; }
+    public void setFlag(Flag flag) { this.flag = flag; } //กำหนดธง
     public Flag getFlag() { return flag; }
 
     
@@ -70,14 +70,13 @@ public class GameMap {
     }
 
     public void update() {
-        if (player != null) player.update();
+        if (player != null) player.update(); //ใช้อัพเดตของPlayer
         
-        // Update enemies and remove dead ones
-        for (int i = enemies.size() - 1; i >= 0; i--) {
+        for (int i = enemies.size() - 1; i >= 0; i--) { //ใช้อัพเดตของDemon
             Demon d = enemies.get(i);
             d.update();
             if (!d.isAlive()) {
-                // Remove dead enemies after a brief delay
+                //ลบสัตว์ที่ตายแล้วออกจากรายการ
                 enemies.remove(i);
             }
         }
@@ -85,15 +84,13 @@ public class GameMap {
 
     public void draw(java.awt.Graphics g) {
         java.awt.Graphics2D g2 = (java.awt.Graphics2D) g;
-        if (background != null) g2.drawImage(background, 0, 0, null);
-        for (Brick b : bricks) b.draw(g2);
-        for (Mushroom m : items) m.draw(g2);
-        for (HeartMushroom hm : heartMushrooms) hm.draw(g2);
-        for (Demon d : enemies) d.draw(g2);
-        if (player != null) player.draw(g2);
-        
-        // Draw the flag
-        if (flag != null) {
+        if (background != null) g2.drawImage(background, 0, 0, null); //วาดพื้นหลัง
+        for (Brick b : bricks) b.draw(g2); //วาดอิฐ
+        for (Mushroom m : items) m.draw(g2); //วาดเห็ด
+        for (HeartMushroom hm : heartMushrooms) hm.draw(g2); //วาดเห็ดหัวใจ
+        for (Demon d : enemies) d.draw(g2); //วาดสัตว์อันตราย
+        if (player != null) player.draw(g2); //วาดผู้เล่น        
+        if (flag != null) { //วาดธง
             flag.draw(g2);
         }
     }

@@ -52,20 +52,20 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     }
 
     @Override
-    public void run() {
-        long last = System.nanoTime();
-        double nsPerTick = 1000000000.0/60.0;
-        double delta = 0;
+    public void run() { 
+        long last = System.nanoTime(); //บันทึกเวลาขณะเริ่มเกม ในหน่วยนาโนวินาที
+        double nsPerTick = 1000000000.0/60.0; //60 FPS
+        double delta = 0; //ตัวแปรสะสมความต่างของเวลา เอาไว้เช็คว่าถึงเวลาต้อง update เกมยัง
         while (true) {
             long now = System.nanoTime();
             delta += (now - last)/nsPerTick;
-            last = now;
-            while (delta >= 1) {
+            last = now; //อัพเดทเวลาปัจจุบัน
+            while (delta >= 1) {  //ถ้า delta ถึง 1 ต้องอัพเดทเกม
                 update();
                 delta--;
             }
             repaint();
-            try { Thread.sleep(2); } catch (InterruptedException e) {}
+            try { Thread.sleep(2); } catch (InterruptedException e) {} //ลดการใช้ CPU
         }
     }
 
@@ -74,77 +74,63 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         if (p != null && !p.isDead() && !p.isWon()) {
             p.applyInput(left, right, jump);
             p.update();
+            updateCamera(p); //อัพเดทตำแหน่งกล้องตามผู้เล่น
 
-            // Update camera to follow player
-            updateCamera(p);
-
-            // collision with mushrooms
-            for (Mushroom m : map.getItems()) {
-                if (!m.isCollected() && p.getBounds().intersects(m.getBounds())) {
-                    m.collect();
-                    p.grow();
+            for (Mushroom m : map.getItems()) { //อัพเดทการเก็บเห็ด
+                if (!m.isCollected() && p.getBounds().intersects(m.getBounds())) { //ตรวจสอบการชนด้วยกรอบสี่เหลี่ยม
+                    m.collect(); //เก็บเห็ด
+                    p.grow(); //Player ตัวใหญ่ขึ้น
                 }
             }
 
-            // collision with heart mushrooms
-            for (HeartMushroom hm : map.getHeartMushrooms()) {
-                if (!hm.isCollected() && p.getBounds().intersects(hm.getBounds())) {
-                    hm.collect();
-                    p.gainLife();
+            for (HeartMushroom hm : map.getHeartMushrooms()) { //อัพเดทการเก็บหัวใจ
+                if (!hm.isCollected() && p.getBounds().intersects(hm.getBounds())) { //ตรวจสอบการชนด้วยกรอบสี่เหลี่ยม
+                    hm.collect(); //เก็บหัวใจ คลาส HeartMushroom
+                    p.gainLife(); //ผู้เล่นจะได้หัวใจเพิ่มขึ้น
                 }
             }
 
-            // Enhanced enemy interactions
-            for (int i = map.getEnemies().size() - 1; i >= 0; i--) {
+            for (int i = map.getEnemies().size() - 1; i >= 0; i--) { //อัพเดทการชนกับ Demon
                 Demon d = map.getEnemies().get(i);
                 if (!d.isAlive()) continue;
-                
-                Rectangle playerBounds = p.getBounds();
-                Rectangle enemyBounds = d.getBounds();
-                Rectangle enemyTopBounds = d.getTopBounds();
-                
-                if (playerBounds.intersects(enemyBounds)) {
-                    // Check if player is stomping on enemy (coming from above)
-                    if (p.getVY() > 0 && playerBounds.intersects(enemyTopBounds) && playerBounds.y < enemyBounds.y + 10) {
-                        // Player stomped on enemy!
-                        d.stomp();
-                        p.update(); // Give player a little bounce
-                    } else if (!p.isInvulnerable()) {
-                        // Enemy hit player from side or below
-                        if (p.isBig()) {
-                            p.shrink();
-                        } else {
-                            p.loseLife();
-                            if (p.getLives() <= 0) {
-                                p.setDead(true);
+                Rectangle playerBounds = p.getBounds(); //กรอบของผู้เล่น
+                Rectangle enemyBounds = d.getBounds(); //กรอบของDemon
+                Rectangle enemyTopBounds = d.getTopBounds(); //กรอบด้านบนของDemon
+                if (playerBounds.intersects(enemyBounds)) { 
+                    //ตรวจสอบว่าผู้เล่นกำลังตกลงมาและชนด้านบน(ในแกนY)ของDemonไหม
+                    if (p.getVY() > 0 && playerBounds.intersects(enemyTopBounds) && playerBounds.y < enemyBounds.y + 10) { 
+                        d.stomp(); //ถ้าชนให้Demonตาย
+                        p.update(); //อัพเดทสถานะผู้เล่น
+                    } else if (!p.isInvulnerable()) { //ถ้าไม่ใช่การชนด้านบน(ในแกนY)
+                        if (p.isBig()) { //ถ้าผู้เล่นตัวใหญ่
+                            p.shrink(); //ผู้เล่นจะหดตัวเล็กลง
+                        } else { //ถ้าผู้เล่นตัวเล็กอยู่แล้ว
+                            p.loseLife(); //ผู้เล่นจะเสียหัวใจ 1 ดวง
+                            if (p.getLives() <= 0) { //ถ้าหมดหัวใจ
+                                p.setDead(true); //ผู้เล่นตาย
                             }
                         }
                     }
                 }
             }
 
-            // Update the map (removes dead enemies)
             map.update();
 
-            // Check flag collision (near fort entrance)
-            Flag flag = map.getFlag();
-            if (flag != null && !flag.isReached()) {
-                Rectangle playerBounds = p.getBounds();
-                Rectangle flagBounds = flag.getBounds();
+            Flag flag = map.getFlag(); //อัพเดทการชนกับธง
+            if (flag != null && !flag.isReached()) { //ถ้ายังไม่ชน
+                Rectangle playerBounds = p.getBounds(); //กรอบของผู้เล่น
+                Rectangle flagBounds = flag.getBounds(); //กรอบของธง
                 if (playerBounds.intersects(flagBounds)) { //ตรวจสอบว่าคนชนธงยัง
                     flag.setReached(true); //ถ้าชนแล้ว
                     p.setWon(true); //คนเล่นจะชนะ
                 }
             }
-
-            // Check fort entrance (main win condition)
-            Point end = map.getEndPosition();
-            if (end != null && !p.isWon()) {
-                Rectangle pr = p.getBounds();
-                // Larger win area for the fort entrance
-                Rectangle fortArea = new Rectangle(end.x - 50, end.y - 50, 100, 100);
-                if (pr.intersects(fortArea)) {
-                    p.setWon(true);
+            Point end = map.getEndPosition(); //อัพเดทการชนกับปแนวเส้นชนะ
+            if (end != null && !p.isWon()) {  //ถ้ายังไม่ชนะ
+                Rectangle pr = p.getBounds(); //กรอบของผู้เล่น
+                Rectangle fortArea = new Rectangle(end.x - 1000, end.y - 50, 100, 100); //กรอบเส้นชนะ
+                if (pr.intersects(fortArea)) { //ตรวจสอบว่าผู้เล่นชนเส้นชนะยัง
+                    p.setWon(true); //ถ้าชนแล้วผู้เล่นจะชนะ
                 }
             }
         }
@@ -172,93 +158,66 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        
-        // Enable anti-aliasing for smoother graphics
+        Graphics2D g2 = (Graphics2D) g; //สร้างกราฟฟิค2ดี
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        
-        // Apply camera transform
-        g2.translate(-cameraX, -cameraY);
-        
-        // Draw the game world (everything moves with the camera)
+        g2.translate(-cameraX, -cameraY);//เลื่อนกล้องตามการวิ่ง
         map.draw(g2);
-        
-        // Reset transform for UI elements (UI should stay fixed on screen)
-        g2.translate(cameraX, cameraY);
-
-        // UI: hearts and messages (these stay fixed on screen)
+        g2.translate(cameraX, cameraY); 
         Player p = map.getPlayer();
         if (p != null) {
-            // Draw lives as hearts
-            for (int i = 0; i < p.getLives(); i++) {
-                Image heart = loader.load("heart.png");
+            for (int i = 0; i < p.getLives(); i++) { //วาดหัวใจตามจำนวนชีวิต
+                Image heart = loader.load("heart.png"); //โหลดรูปหัวใจ
                 if (heart != null) {
-                    g.drawImage(heart, 10 + i * 30, 10, 24, 24, null);
+                    //วาดรูปหัวใจที่มุมซ้ายบน โดยเว้นระยะห่าง 30 กว้าง 24 สูง 24
+                    g.drawImage(heart, 10 + i * 30, 10, 24, 24, null); 
                 } else {
-                    // Fallback if heart image not found
-                    g.setColor(Color.RED);
+                    g.setColor(Color.RED); //ถ้าไม่มีรูปให้วาดวงกลมแดงแทน
                     g.fillOval(10 + i * 30, 10, 24, 24);
                 }
             }
-            
-            // Score removed from UI
-            
-            // Draw game state messages
             g.setFont(new Font("Arial", Font.BOLD, 24));
             FontMetrics fm = g.getFontMetrics();
-            
-                if (p.isDead()) {
+                if (p.isDead()) { //ถ้าแพ้ให้ขึ้นข้อความ "GAME OVER - Press R to Restart"
                 String msg = "GAME OVER - Press R to Restart";
-                g.setColor(Color.RED);
-                int x = (getWidth() - fm.stringWidth(msg)) / 2;
-                int y = getHeight() / 2;
+                g.setColor(Color.RED); //สีแดง
+                int x = (getWidth() - fm.stringWidth(msg)) / 2; //กลางจอ
+                int y = getHeight() / 2; 
                 g.drawString(msg, x, y);
                 g.setFont(new Font("Arial", Font.BOLD, 16));
-                // final score display removed
-            } else if (p.isWon()) {
+            } else if (p.isWon()) { //ข้อความเมื่อชนะ
                 String msg = "FORT REACHED! YOU WIN! - Press R to Restart";
                 g.setColor(Color.GREEN);
                 int x = (getWidth() - fm.stringWidth(msg)) / 2;
                 int y = getHeight() / 2;
                 g.drawString(msg, x, y);
                 g.setFont(new Font("Arial", Font.BOLD, 16));
-                // final score display removed
             }
-            
-            // Show power-up status
-            if (p.isBig()) {
-                g.setColor(Color.YELLOW);
-                g.setFont(new Font("Arial", Font.BOLD, 16));
-                g.drawString("SUPER MARIO!", 10, HEIGHT - 40);
-            }
-            
-            // Optional: Show player coordinates for debugging
+            //ข้อความแสดงตำแหน่องของผู้เล่น กล้อง และสัตว์อันตราย
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.PLAIN, 12));
-            g.drawString("Mario: (" + p.getX() + ", " + p.getY() + ")", WIDTH - 150, 20);
+            g.drawString("Player: (" + p.getX() + ", " + p.getY() + ")", WIDTH - 150, 20);
             g.drawString("Camera: (" + cameraX + ", " + cameraY + ")", WIDTH - 150, 35);
-            g.drawString("Enemies: " + map.getEnemies().size(), WIDTH - 150, 50);
         }
     }
 
-    private void restartGame() {
-        MapCreator creator = new MapCreator(loader, "background.png");
-        map = creator.create();
-        Player player = map.getPlayer();
-        if (player != null) {
-            player.setGameMap(map);
+    private void restartGame() { //รีสตาร์ทเกม
+        MapCreator creator = new MapCreator(loader, "background.png"); //สร้างเกมใหม่
+        map = creator.create(); //สร้างแผนที่ใหม่
+        Player player = map.getPlayer(); //ตั้งค่าGameMapให้Playerตัวใหม่
+        if (player != null) { 
+            player.setGameMap(map); //เชื่อมโยงกับGameMap
         }
-    // Reset camera position
+    // Reset กล้อง
         cameraX = 0;
         cameraY = 0;
     }
 
     // KeyListener
     @Override 
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {} 
     
     @Override 
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(KeyEvent e)  { //เป็นการตรวจสอบปุ่มที่กด
         if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
             left = true;
         }
@@ -273,7 +232,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         }
     }
     
-    @Override public void keyReleased(KeyEvent e) {
+    @Override public void keyReleased(KeyEvent e) { //เป็นการตรวจสอบปุ่มที่ปล่อย
         if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
             left = false;
         }

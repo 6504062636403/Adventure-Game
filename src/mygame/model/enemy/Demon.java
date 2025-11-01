@@ -15,43 +15,39 @@ public class Demon {
     private GameMap gameMap;
     private boolean alive = true;
     private boolean onGround = false;
-    private boolean isStatic = false; //
-    
+    private boolean isStatic = false; 
     // กำหนดค่าคงที่
     private final double GRAVITY = 0.8;
     private final double MAX_FALL_SPEED = 15.0;
     private final double GROUND_LEVEL = 450;
 
-    public Demon(int x, int y, BufferedImage sprite, Type type) {
+    public Demon(int x, int y, BufferedImage sprite, Type type) { //เป็นการกำหนดการเคลื่อนที่ของสัตว์อันตราย
         this.x = x; 
         this.y = y; 
-        this.sprite = sprite; 
-        this.type = type;
+        this.sprite = sprite; //รูปภาพของสัตว์อันตราย
+        this.type = type; 
         this.vx = 0;
         this.vy = 0;
-        
-        // Different speeds and behaviors for different demon types
-        this.speed = (type == Type.DEMON1) ? 1.5 : 2.5;
+    
+        this.speed = (type == Type.DEMON1) ? 1.5 : 2.5; //ถ้าเป็น DEMON1 ความเร็ว=1.5 แต่ถ้าเป็น DEMON2 ความเร็ว=2.5
     }
 
-    // Constructor for static demons
-    public Demon(int x, int y, BufferedImage sprite, Type type, boolean isStatic) {
-        this(x, y, sprite, type);
+    public Demon(int x, int y, BufferedImage sprite, Type type, boolean isStatic) { //เป็นการบอกให้รู้ว่าสัตว์อันตรายนั้นจะอยู่นิ่งหรือไม่
+        this(x, y, sprite, type); 
         this.isStatic = isStatic;
         if (isStatic) {
-            this.speed = 0; // No movement for static demons
+            this.speed = 0; //ไม่เคลื่อนที่
         }
     }
 
     public void setGameMap(GameMap gameMap) {
-        this.gameMap = gameMap;
+        this.gameMap = gameMap; //เชื่อมโยงกับgameMap
     }
 
-    public void update() {
-        if (!alive) return;
+    public void update() { //สถานะของสัตว์อันตราย
+        if (!alive) return; //ถ้าตายจะไม่ทำอะไร
         
-        if (isStatic) {
-            // Only apply gravity to keep them on ground
+        if (isStatic) { //ถ้าเป็นสัตว์อันตรายที่อยู่นิ่ง ปรับตามแรงโน้มถ่วง
             if (y + h < GROUND_LEVEL) {
                 vy += GRAVITY;
                 if (vy > MAX_FALL_SPEED) vy = MAX_FALL_SPEED;
@@ -69,7 +65,7 @@ public class Demon {
                 vy = 0;
                 onGround = true;
             }
-            return; // Exit early for static demons
+            return; 
         }
         
         // Original movement logic for non-static demons
@@ -186,28 +182,22 @@ public class Demon {
         return new Rectangle((int)x + 5, (int)y, (int)w - 10, (int)h / 3);
     }
 
-    public void draw(Graphics2D g) {
-        if (!alive) {
-            // Draw flattened enemy for a brief moment
+    public void draw(Graphics2D g) { //วาดสัตว์อันตราย
+        if (!alive) { 
             g.setColor(Color.DARK_GRAY);
             g.fillOval((int)x, (int)(y + h - 10), (int)w, 10);
             return;
         }
-        
-        if (sprite != null) {
-            // Flip sprite based on direction for more dynamic look
-            if (dir > 0) {
+        if (sprite != null) { //ถ้ามีรูปภาพ
+            if (dir > 0) { //
                 g.drawImage(sprite, (int)x, (int)y, (int)w, (int)h, null);
             } else {
-                g.drawImage(sprite, (int)x + (int)w, (int)y, -(int)w, (int)h, null); // Flipped
+                g.drawImage(sprite, (int)x + (int)w, (int)y, -(int)w, (int)h, null); 
             }
-        } else { 
-            // Colored fallback with better graphics
+        } else { //ถ้าไม่มีรูปภาพ วาดเป็นวงกลมแทน
             g.setColor(type == Type.DEMON1 ? Color.CYAN : Color.MAGENTA); 
             g.fillOval((int)x, (int)y, (int)w, (int)h);
-            
-            // Add eyes
-            g.setColor(Color.RED);
+            g.setColor(Color.RED); //วาดตา
             int eyeSize = 6;
             int eyeY = (int)y + (int)h / 3;
             if (dir > 0) {
@@ -217,8 +207,6 @@ public class Demon {
                 g.fillOval((int)x + 4, eyeY, eyeSize, eyeSize);
                 g.fillOval((int)x + 12, eyeY, eyeSize, eyeSize);
             }
-            
-            // Add direction indicator (spikes)
             g.setColor(Color.BLACK);
             int[] xPoints, yPoints;
             if (dir > 0) {

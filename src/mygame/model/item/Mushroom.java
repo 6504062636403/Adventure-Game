@@ -9,7 +9,7 @@ public class Mushroom {
     private BufferedImage sprite;
 
     public Mushroom(int x, int y, BufferedImage sprite) {
-        this.x = x; this.y = y; this.sprite = sprite;
+        this.x = x; this.y = y; this.sprite = sprite; //เป็นการกำหนดตำแหน่งและรูปภาพของเห็ด
     }
 
     public void draw(Graphics2D g) {
@@ -18,8 +18,8 @@ public class Mushroom {
             else { g.setColor(Color.PINK); g.fillOval(x,y,w,h); }
         }
     }
-
-    public void collect() { collected = true; }
+    public void collect() { collected = true; } //เก็บเห็ด
+    
     public boolean isCollected() { return collected; }
     public Rectangle getBounds() { return new Rectangle(x,y,w,h); }
 }

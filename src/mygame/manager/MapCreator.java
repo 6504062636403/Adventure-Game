@@ -100,6 +100,9 @@ public class MapCreator {
         // Add some heart mushrooms throughout the level for extra lives
         addHeartMushrooms(map, actualLevelLength);
         
+        // Add random mushrooms for growing throughout the level
+        addRandomMushrooms(map, actualLevelLength);
+        
         // Position the win condition at the fort in the background
         // The fort is typically at the end of the background image
         int fortX, fortY;
@@ -116,7 +119,7 @@ public class MapCreator {
         map.setEndPosition(fortX, fortY);
         
         // Create a flag at the fort entrance (optional visual indicator)
-        Flag flag = new Flag(fortX - 1100, fortY - 96, loader.load
+        Flag flag = new Flag(fortX - 1000, fortY - 96, loader.load
         ("flag.png")); // Position flag before fort entrance
         map.setFlag(flag);
         
@@ -154,8 +157,6 @@ public class MapCreator {
             map.addBlock(new Brick(x, groundY + 48, loader.load("brick.png")));
             map.addBlock(new Brick(x, groundY + 96, loader.load("brick.png")));
             map.addBlock(new Brick(x, groundY + 144, loader.load("brick.png")));
-            map.addBlock(new Brick(x, groundY + 192, loader.load("brick.png")));
-            map.addBlock(new Brick(x, groundY + 240, loader.load("brick.png")));
         }
         
         System.out.println("Created default ground from 0 to " + fullLevelWidth + " at level " + groundY);
@@ -179,6 +180,35 @@ public class MapCreator {
         }
 
         System.out.println("Total heart mushrooms added to level: " + heartMushroomsAdded);
+    }
+    
+    //สุ่มเห็ดเพิ่มขนาดPlayer
+    private void addRandomMushrooms(GameMap map, int levelLength) { 
+        int minSpacing = 800; //ระยะห่างขั้นต่ำระหว่างเห็ด
+        int maxSpacing = 1300; //ระยะห่างสูงสุดระหว่างเห็ด
+        int startX = 200; //จุดเริ่มต้นวางเห็ดในแกน X
+        int mushroomsAdded = 0;
+        
+        int x = startX;
+        while (x < levelLength - 200) { //เว้นที่ไว้สำหรับธง
+            //สุ่มในแกน X
+            int spacing = minSpacing + (int)(Math.random() * (maxSpacing - minSpacing));
+            x += spacing; //เก็บค่าระยะห่างที่สุ่มได้ในแกน X
+            //สุ่มตำแหน่งY
+            int mushroomY;
+            double heightChance = Math.random(); //สุ่มเลข
+            if (heightChance < 0.2) { 
+                mushroomY = 402; //บนพื้นดิน
+            } else {
+                mushroomY = 350; //แกน Y แบบลอย
+            }
+            map.addItem(new Mushroom(x, mushroomY, loader.load("mushroom.png"))); //เพิ่มเห็ด
+            mushroomsAdded++;
+            if (mushroomsAdded <= 8) {
+                System.out.println("Added random mushroom " + mushroomsAdded + " at (" + x + "," + mushroomY + ")");
+            }
+        }
+        System.out.println("Total random mushrooms added to level: " + mushroomsAdded);
     }
     
     private void createBasicLevel(GameMap map) {

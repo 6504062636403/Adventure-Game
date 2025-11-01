@@ -25,7 +25,7 @@ public class Flag {
     }
     
     public void draw(Graphics2D g) {
-        if (image != null) {
+        if (image != null) { //เมื่อมีรูปภาพ
             g.drawImage(image, x, y, width, height, null);
         } else {
             // Fallback drawing if image not found
